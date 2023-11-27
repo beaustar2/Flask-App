@@ -11,14 +11,6 @@ pipeline {
     }
 
     stages {
-        stage('Install Python') {
-            steps {
-                script {
-                    sh 'sudo apt-get update && sudo apt-get install -y python3'
-                }
-            }
-        }
-
         stage('Clone repository') {
             steps {
                 script {
@@ -52,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // Create an Ansible inventory file with server details
-                    writeFile file: customizedhosts.ini, text: '''
+                    writeFile file: ANSIBLE_HOSTS_FILE, text: '''
                         [webservers]
                         n1 ansible_host=172.31.2.80 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/kiki.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
                         n2 ansible_host=172.31.14.165 ansible_user=ec2-user ansible_ssh_private_key_file=/home/ubuntu/kiki.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
@@ -65,7 +57,7 @@ pipeline {
             steps {
                 script {
                     // Run the Ansible playbook to deploy the Flask app
-                    sh "ansiblePlaybook become: true, disableHostKeyChecking: true, installation: 'ansible', inventory: 'customizedhosts.ini, playbook: 'deploy-flaskapp.yaml'}"
+                    sh "ansible-playbook become=true disableHostKeyChecking=true installation='ansible' inventory=${ANSIBLE_HOSTS_FILE} playbook='deploy-flaskapp.yaml'"
                 }
             }
         }
