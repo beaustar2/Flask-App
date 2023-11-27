@@ -30,7 +30,8 @@
 
     - name: Create Flask virtual environment
       ansible.builtin.command: python3 -m venv /home/ubuntu/Flask-App/flask_env
-
+      become: yes
+      
     - name: Activate Flask virtual environment
       ansible.builtin.shell: source /home/ubuntu/Flask-App/flask_env/bin/activate
       args:
