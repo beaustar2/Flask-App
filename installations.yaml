@@ -73,7 +73,7 @@
 
     - name: Configure Nginx (Ubuntu)
       template:
-        src: templates/nginx.conf.j2
+        src: templates/u-nginx.conf.j2
         dest: /etc/nginx/sites-available/flask_app
       notify:
         - restart nginx
