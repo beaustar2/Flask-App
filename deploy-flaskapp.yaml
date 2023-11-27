@@ -13,11 +13,10 @@
         state: present
       when: ansible_distribution_major_version == "ubuntu"
 
-    - name: Clone Flask-webapp from GitHub
+    - name: Clone Flask-App from GitHub
       git:
         repo: https://github.com/beaustar2/Flask-App.git
         dest: /home/ubuntu/Flask-App
-
         update: yes
         force: yes
       when:
@@ -29,9 +28,8 @@
         src: app.py
         dest: /home/ubuntu/Flask-App
 
-
     - name: Create Flask virtual environment
-      ansible.builtin.command: python3 -m venv //home/ubuntu/Flask-App/flask_env
+      ansible.builtin.command: python3 -m venv /home/ubuntu/Flask-App/flask_env
 
     - name: Activate Flask virtual environment
       ansible.builtin.shell: source /home/ubuntu/Flask-App/flask_env/bin/activate
@@ -41,8 +39,47 @@
     - name: Install Flask library
       ansible.builtin.pip:
         name: Flask
-        executable: //home/ubuntu/Flask-App/flask_env/bin/pip3
+        executable: /home/ubuntu/Flask-App/flask_env/bin/pip3
         state: present
+
+    - name: Install Gunicorn
+      ansible.builtin.pip:
+        name: gunicorn
+        executable: /home/ubuntu/Flask-App/flask_env/bin/pip3
+        state: present
+
+    - name: Configure Gunicorn systemd service
+      ansible.builtin.template:
+        src: gunicorn.service.j2
+        dest: /etc/systemd/system/gunicorn.service
+      notify:
+        - Reload systemd
+
+    - name: Start and enable Gunicorn service
+      ansible.builtin.service:
+        name: gunicorn
+        state: started
+        enabled: yes
+
+    - name: Install Nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
+    - name: Configure Nginx site
+      ansible.builtin.template:
+        src: nginx-site.conf.j2
+        dest: /etc/nginx/sites-available/flask-web
+      notify:
+        - Reload Nginx
+
+    - name: Enable Nginx site
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/flask-web
+        dest: /etc/nginx/sites-enabled/flask-web
+        state: link
+      notify:
+        - Reload Nginx
 
     - name: Reload firewall configuration
       ansible.builtin.shell: "{{ item }}"
@@ -53,7 +90,7 @@
       when: "'firewall-cmd' in ansible_playbook_python"
 
     - name: Start the Flask App
-      ansible.builtin.command: python3 /home/ubuntu/Flask-App/app.py
+      ansible.builtin.command: systemctl restart gunicorn
       async: 1
       poll: 0
       register: flask_app_start_result
@@ -61,4 +98,15 @@
     - name: Debug the output
       ansible.builtin.debug:
         var: flask_app_start_result
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        name: gunicorn
+        state: restarted
+
+    - name: Reload Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
 ...
