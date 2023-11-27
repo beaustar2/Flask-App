@@ -2,43 +2,27 @@
 - name: Install required packages and setup virtual environment
   hosts: webservers
   become: yes
-  
+
   tasks:
-    - name: Update packages (Amazon Linux)
-      command: "dnf update -y"
-      args:
-        warn: false
-      when: ansible_distribution == "Amazon"
-      
     - name: Install required packages (Ubuntu)
       apt:
         name:
           - python3
           - python3-pip
           - git
+          - python3-venv  # Add python3-venv package for Ubuntu
         state: present
       when: ansible_distribution == "Ubuntu"
 
-    - name: Install required packages (Amazon Linux)
-      dnf:
+    - name: Install required packages (CentOS)
+      yum:
         name:
           - python3
           - python3-pip
           - git
+          - python3-venv  # Add python3-venv package for CentOS
         state: present
-      when: ansible_distribution == "Amazon"
-
-    - name: Install python3-venv package (Ubuntu)
-      apt:
-        name: python3-venv
-        state: present
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Install python3-venv package (Amazon Linux)
-      dnf:
-        name: python3-venv
-        state: present
-      when: ansible_distribution == "Amazon"
+      when: ansible_distribution == "CentOS"
 
     - name: Set up a virtual environment
       become: yes
@@ -62,9 +46,9 @@
         state: present
       when: ansible_distribution == "Ubuntu"
 
-    - name: Install Nginx (Amazon Linux)
+    - name: Install Nginx (CentOS)
       yum:
         name: nginx
         state: present
-      when: ansible_distribution == "Amazon"
+      when: ansible_distribution == "CentOS"
 ...
