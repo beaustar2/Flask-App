@@ -10,7 +10,7 @@
           - python3-pip
           - git
         state: present
-      when: ansible_distribution == "ubuntu"
+      when: ansible_distribution == "Ubuntu"
 
     - name: Install required packages on Amazon Linux
       dnf:
@@ -19,19 +19,19 @@
           - python3-pip
           - git
         state: present
-      when: ansible_distribution == "amazon"
+      when: ansible_distribution == "Amazon"
 
     - name: Install python3-venv package
       ansible.builtin.apt:
         name: python3-venv
         state: present  # or use "latest" to ensure it's the latest version
-      when: ansible_distribution_major_version == "ubuntu"
+      when: ansible_distribution_major_version == "Ubuntu"
 
     - name: Install python3-venv package on Amazon Linux
       ansible.builtin.dnf:
         name: python3-venv
         state: present
-      when: ansible_distribution_major_version == "amazon"
+      when: ansible_distribution_major_version == "Amazon"
 
     - name: Set up a virtual environment
       become: yes
@@ -53,11 +53,11 @@
       apt:
         name: nginx
         state: present
-      when: ansible_distribution_major_version == "ubuntu"
+      when: ansible_distribution_major_version == "Ubuntu"
 
     - name: Install Nginx
       dnf:
         name: nginx
         state: present
-      when: ansible_distribution_major_version == "amazon"
+      when: ansible_distribution_major_version == "Amazon"
 ...
