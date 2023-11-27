@@ -7,7 +7,7 @@
     - name: Clone Flask-App from GitHub
       git:
         repo: https://github.com/beaustar2/Flask-App.git
-        dest: /home/{{ ansible_user }}/Flask-App
+        dest: "/home/{{ ansible_user }}/Flask-App"
         update: yes
         force: yes
       when: "'/home/{{ ansible_user }}/Flask-App' not in ansible_facts.mounts | map(attribute='mount') | list and (lookup('fileglob', '/home/{{ ansible_user }}/Flask-App*') | list | length) == 0"
@@ -15,7 +15,7 @@
     - name: Copy Flask application code
       ansible.builtin.copy:
         src: app.py
-        dest: /home/{{ ansible_user }}/Flask-App
+        dest: "/home/{{ ansible_user }}/Flask-App"
 
     - name: Set up a virtual environment
       become: yes
@@ -39,8 +39,8 @@
         state: present
 
     - name: Run the Flask App with Gunicorn
-      ansible.builtin.command: /home/{{ ansible_user }}/Flask-App/flask_env/bin/gunicorn -w 3 -b 0.0.0.0:8000 app:app
-      async: 1
+      ansible.builtin.command: "/home/{{ ansible_user }}/Flask-App/flask_env/bin/gunicorn -w 3 -b 0.0.0.0:8000 app:app"
+      async: 300  # Set the timeout (seconds) for the task to complete
       poll: 0
       become: yes
       register: gunicorn_result
