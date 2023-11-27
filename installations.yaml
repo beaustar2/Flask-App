@@ -4,22 +4,22 @@
   become: yes
   tasks:
     - name: Install required packages
-      ansible.builtin.package:
+      apt:
         name:
           - python3
           - python3-pip
           - git
         state: present
-      when: ansible_distribution_major_version == "ubuntu"
+      when: ansible_distribution == "ubuntu"
 
     - name: Install required packages on Amazon Linux
-      ansible.builtin.yum:
+      dnf:
         name:
           - python3
           - python3-pip
           - git
         state: present
-      when: ansible_distribution_major_version == "amazon"
+      when: ansible_distribution == "amazon"
 
     - name: Install python3-venv package
       ansible.builtin.apt:
@@ -28,7 +28,7 @@
       when: ansible_distribution_major_version == "ubuntu"
 
     - name: Install python3-venv package on Amazon Linux
-      ansible.builtin.yum:
+      ansible.builtin.dnf:
         name: python3-venv
         state: present
       when: ansible_distribution_major_version == "amazon"
@@ -50,7 +50,14 @@
         state: present
 
     - name: Install Nginx
-      ansible.builtin.package:
+      apt:
         name: nginx
         state: present
+      when: ansible_distribution_major_version == "ubuntu"
+
+    - name: Install Nginx
+      dnf:
+        name: nginx
+        state: present
+      when: ansible_distribution_major_version == "amazon"
 ...
