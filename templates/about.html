@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Journey - About</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- Add your custom styles if needed -->
+</head>
+<body>
+    <header class="bg-dark text-white text-center py-4">
+        <h1>DevOps Journey</h1>
+    </header>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('projects') }}">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <section id="about">
+            <h2>About Us</h2>
+            <p class="lead">Hello there! We are the team behind DevOps Journey, passionate DevOps Engineers on a collective journey of continuous learning and improvement.</p>
+            <p>We thrive on the challenges of automating processes, optimizing workflows, and ensuring seamless collaboration between teams. With backgrounds in [Your Backgrounds], we bring a diverse and unique perspective to the DevOps landscape.</p>
+            <p>Whether it's implementing CI/CD pipelines, managing infrastructure as code, or enhancing system reliability, we are committed to pushing the boundaries of what's possible in the DevOps realm.</p>
+            <p>Outside of the tech world, you can find us [Hobbies or Interests]. We believe in the power of community and knowledge-sharing, so let's connect and explore the ever-evolving field of DevOps together!</p>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2023 DevOps Journey. All rights reserved.</p>
+    </footer>
+
+    <!-- Add Bootstrap JavaScript and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

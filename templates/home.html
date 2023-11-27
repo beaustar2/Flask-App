@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Journey - Home</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- Add your custom styles if needed -->
+</head>
+<body>
+    <header class="bg-dark text-white text-center py-4">
+        <h1 class="display-4">DevOps Journey</h1>
+    </header>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('projects') }}">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <section id="home">
+            <h2>Welcome to Our DevOps Journey!</h2>
+            <p>Hello and thank you for joining us on our DevOps journey! This space is dedicated to sharing our experiences, challenges, and victories as we navigate the dynamic and ever-evolving world of DevOps.</p>
+            <p>As aspiring DevOps Engineers, we believe in the power of automation, collaboration, and continuous improvement. Here, you'll find insights into the projects we're working on, the technologies we're exploring, and the lessons we've learned along the way.</p>
+            <p>Feel free to explore this space and discover the exciting things we're building on our way to becoming seasoned DevOps professionals. Stay tuned for more updates, tutorials, and insights. Happy coding!</p>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2023 DevOps Journey. All rights reserved.</p>
+    </footer>
+
+    <!-- Add Bootstrap JavaScript and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
