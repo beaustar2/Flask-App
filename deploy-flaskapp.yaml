@@ -2,45 +2,44 @@
 - name: Deploy Flask App
   hosts: webservers
   become: yes
+
   tasks:
     - name: Clone Flask-App from GitHub
       git:
         repo: https://github.com/beaustar2/Flask-App.git
-        dest: /home/ubuntu/Flask-App
+        dest: /home/{{ ansible_user }}/Flask-App
         update: yes
         force: yes
-      when:
-        - "'/home/ubuntu/Flask-App' not in ansible_facts.mounts | map(attribute='mount') | list"
-        - "(lookup('fileglob', '/home/ubuntu/Flask-App*') | list | length) == 0"
+      when: "'/home/{{ ansible_user }}/Flask-App' not in ansible_facts.mounts | map(attribute='mount') | list and (lookup('fileglob', '/home/{{ ansible_user }}/Flask-App*') | list | length) == 0"
 
     - name: Copy Flask application code
       ansible.builtin.copy:
         src: app.py
-        dest: /home/ubuntu/Flask-App
+        dest: /home/{{ ansible_user }}/Flask-App
 
-    - name: Create Flask virtual environment
-      ansible.builtin.command: python3 -m venv /home/ubuntu/Flask-App/flask_env
+    - name: Set up a virtual environment
       become: yes
+      command: "python3 -m venv /home/{{ ansible_user }}/Flask-App/flask_env"
 
     - name: Activate Flask virtual environment
-      ansible.builtin.shell: source /home/ubuntu/Flask-App/flask_env/bin/activate
+      ansible.builtin.shell: source /home/{{ ansible_user }}/Flask-App/flask_env/bin/activate
       args:
         executable: /bin/bash
 
     - name: Install Flask library
       ansible.builtin.pip:
         name: Flask
-        executable: /home/ubuntu/Flask-App/flask_env/bin/pip3
+        executable: /home/{{ ansible_user }}/Flask-App/flask_env/bin/pip3
         state: present
 
-    - name: Install Gunicorn (if not installed during setup)
+    - name: Install Gunicorn
       ansible.builtin.pip:
         name: gunicorn
-        executable: /home/ubuntu/Flask-App/flask_env/bin/pip3
+        executable: /home/{{ ansible_user }}/Flask-App/flask_env/bin/pip3
         state: present
 
     - name: Run the Flask App with Gunicorn
-      ansible.builtin.command: /home/ubuntu/Flask-App/flask_env/bin/gunicorn -w 4 -b 0.0.0.0:8000 app:app
+      ansible.builtin.command: /home/{{ ansible_user }}/Flask-App/flask_env/bin/gunicorn -w 3 -b 0.0.0.0:8000 app:app
       async: 1
       poll: 0
       become: yes
