@@ -1,0 +1,40 @@
+---
+- name: Install required packages and setup virtual environment
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - python3
+          - python3-pip
+          - git
+        state: present
+      when: ansible_distribution_major_version == "ubuntu" or ansible_distribution_major_version == "amazon"
+
+    - name: Install python3-venv package
+      ansible.builtin.apt:
+        name: python3-venv
+        state: present  # or use "latest" to ensure it's the latest version
+
+    - name: Set up a virtual environment
+      become: yes
+      command: "python3 -m venv /home/ubuntu/Flask-App/flask_env"
+
+    - name: Install Flask library
+      ansible.builtin.pip:
+        name: Flask
+        executable: /home/ubuntu/Flask-App/flask_env/bin/pip3
+        state: present
+
+    - name: Install Gunicorn
+      ansible.builtin.pip:
+        name: gunicorn
+        executable: /home/ubuntu/Flask-App/flask_env/bin/pip3
+        state: present
+
+    - name: Install Nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+...
