@@ -6,7 +6,7 @@ pipeline {
         ANSIBLE_PLAYBOOK = 'deploy-flaskapp.yml'
         VENV_PATH = 'venv'
         TEST_SCRIPT = 'test.py'
-        EMAIL_RECIPIENT = 'Beautypop4sure@gmail.com'  // Replace with the recipient email address
+        EMAIL_RECIPIENT = 'your_email@example.com'  // Set your recipient email address here
         FLASK_APP = 'app.py'
     }
 
@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // Create an Ansible inventory file with server details
-                    writeFile file: customizedhosts.ini, text: '''
+                    writeFile file: ANSIBLE_HOSTS_FILE, text: '''
                         [webservers]
                         n1 ansible_host=172.31.2.80 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/kiki.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
                         n2 ansible_host=172.31.14.165 ansible_user=ec2-user ansible_ssh_private_key_file=/home/ubuntu/kiki.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
@@ -57,7 +57,7 @@ pipeline {
             steps {
                 script {
                     // Run the Ansible playbook to deploy the Flask app
-                    sh "ansiblePlaybook become: true, disableHostKeyChecking: true, installation: 'ansible', inventory: 'customizedhosts.ini, playbook: 'deploy-flaskapp.yaml'}"
+                    sh "ansible-playbook -i customizedhosts.ini deploy-flaskapp.yaml"
                 }
             }
         }
@@ -68,7 +68,7 @@ pipeline {
             emailext subject: 'Flask App Tests Passed and Deployment Successful',
                       body: 'The Flask App tests passed, and the deployment was successful.',
                       recipientProviders: [[$class: 'CulpritsRecipientProvider']],
-                      to: Beautypop4sure@gmail.com
+                      to: EMAIL_RECIPIENT
         }
 
         failure {
