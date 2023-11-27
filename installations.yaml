@@ -10,7 +10,6 @@
           - python3
           - python3-pip
           - git
-          - python3-venv
         state: present
       when: ansible_distribution == "Ubuntu"
 
@@ -20,18 +19,18 @@
           - python3
           - python3-pip
           - git
-          - python3-venv
         state: present
       when: ansible_distribution == "CentOS"
+
+    - name: Install python3-venv package (Ubuntu)
+      apt:
+        name: python3-venv
+        state: present
+      when: ansible_distribution == "Ubuntu"
 
     - name: Set up a virtual environment
       become: yes
       command: "python3 -m venv /home/{{ ansible_user }}/Flask-App/flask_env"
-
-    - name: Activate Flask virtual environment
-      ansible.builtin.shell: source /home/{{ ansible_user }}/Flask-App/flask_env/bin/activate
-      args:
-        executable: /bin/bash
 
     - name: Install Flask library
       ansible.builtin.pip:
@@ -57,6 +56,15 @@
         state: present
       when: ansible_distribution == "CentOS"
 
+    - name: Set up a virtual environment
+      become: yes
+      command: "python3 -m venv /home/{{ ansible_user }}/Flask-App/flask_env"
+
+    - name: Activate Flask virtual environment
+      ansible.builtin.shell: source /home/{{ ansible_user }}/Flask-App/flask_env/bin/activate
+      args:
+        executable: /bin/bash
+
     - name: Install Firewall (CentOS)
       yum:
         name: firewalld
@@ -70,7 +78,6 @@
         state: enabled
       notify:
         - restart firewalld
-      when: ansible_distribution == 'CentOS'
 
     - name: Configure Firewall (CentOS)
       firewalld:
@@ -79,7 +86,6 @@
         state: enabled
       notify:
         - restart firewalld
-      when: ansible_distribution == 'CentOS'
 
     - name: Configure Firewall (CentOS)
       firewalld:
@@ -88,14 +94,12 @@
         state: enabled
       notify:
         - restart firewalld
-      when: ansible_distribution == 'CentOS'
 
     - name: Restart firewalld (CentOS)
       systemd:
         name: firewalld
         state: restarted
       become: yes
-      when: ansible_distribution == 'CentOS'
 
     - name: Create Nginx sites-available directory (Ubuntu)
       file:
@@ -111,7 +115,7 @@
 
     - name: Configure Nginx (Ubuntu)
       template:
-        src: nginx.conf.j2
+        src: templates/nginx.conf.j2
         dest: /etc/nginx/sites-available/flask_app
       notify:
         - restart nginx
@@ -119,7 +123,7 @@
 
     - name: Configure Nginx (CentOS)
       template:
-        src: nginx.conf.j2
+        src: templates/nginx.conf.j2
         dest: /etc/nginx/conf.d/flask_app.conf
       notify:
         - restart nginx
@@ -155,8 +159,16 @@
         - restart nginx
       when: ansible_distribution == "CentOS"
 
-    - name: Start Nginx service
+    - name: Start Nginx service (Ubuntu)
       service:
         name: nginx
         state: started
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Start Nginx service (CentOS)
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+      when: ansible_distribution == "CentOS"
 ...
