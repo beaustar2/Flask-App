@@ -14,17 +14,16 @@
       when: ansible_distribution_major_version == "ubuntu" or ansible_distribution_major_version == "amazon"
 
     - name: Setup Virtual Environment
-      hosts: webservers
+      become: yes
       tasks:
         - name: Install python3-venv package
-          become: yes
           ansible.builtin.apt:
             name: python3-venv
             state: present  # or use "latest" to ensure it's the latest version
 
         - name: Set up a virtual environment
-          become: yes
           command: "python3 -m venv /home/ubuntu/Flask-App/flask_env"
+          become: yes
 
         - name: Clone Flask-App from GitHub
           git:
