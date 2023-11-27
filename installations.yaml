@@ -10,7 +10,7 @@
           - python3
           - python3-pip
           - git
-          - python3-venv  # Add python3-venv package for Ubuntu
+          - python3-venv
         state: present
       when: ansible_distribution == "Ubuntu"
 
@@ -20,13 +20,18 @@
           - python3
           - python3-pip
           - git
-          - python3-venv  # Add python3-venv package for CentOS
         state: present
       when: ansible_distribution == "CentOS"
 
-    - name: Set up a virtual environment
+    - name: Set up a virtual environment (Ubuntu)
       become: yes
       command: "python3 -m venv /home/ubuntu/Flask-App/flask_env"
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Set up a virtual environment (CentOS)
+      become: yes
+      command: "python3 -m venv /home/ubuntu/Flask-App/flask_env"
+      when: ansible_distribution == "CentOS"
 
     - name: Install Flask library
       ansible.builtin.pip:
