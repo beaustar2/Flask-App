@@ -1,0 +1,64 @@
+---
+- name: Provision and configure Flask_webapp
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - python3
+          - python3-pip
+          - git
+        state: present
+      when: ansible_distribution_major_version == "ubuntu"
+
+    - name: Clone Flask-webapp from GitHub
+      git:
+        repo: https://github.com/beaustar2/Flask-webapp.git
+        dest: /home/ubuntu/Flask-web
+
+        update: yes
+        force: yes
+      when:
+        - "'/home/centos/project' not in ansible_facts.mounts | map(attribute='mount') | list"
+        - "(lookup('fileglob', '/home/ubuntu/Flask-web*') | list | length) == 0"
+
+    - name: Copy Flask application code
+      ansible.builtin.copy:
+        src: app.py
+        dest: /home/ubuntu/Flask-web
+
+
+    - name: Create Flask virtual environment
+      ansible.builtin.command: python3 -m venv //home/ubuntu/Flask-web/flask_env
+
+    - name: Activate Flask virtual environment
+      ansible.builtin.shell: source /home/ubuntu/Flask-web/flask_env/bin/activate
+      args:
+        executable: /bin/bash
+
+    - name: Install Flask library
+      ansible.builtin.pip:
+        name: Flask
+        executable: //home/ubuntu/Flask-web/flask_env/bin/pip3
+        state: present
+
+    - name: Reload firewall configuration
+      ansible.builtin.shell: "{{ item }}"
+      with_items:
+        - "firewall-cmd --reload"
+        - "ufw reload"
+      become: yes
+      when: "'firewall-cmd' in ansible_playbook_python"
+
+    - name: Start the Flask App
+      ansible.builtin.command: python3 /home/ubuntu/Flask-web/Flask_web/app.py
+      async: 1
+      poll: 0
+      register: flask_app_start_result
+
+    - name: Debug the output
+      ansible.builtin.debug:
+        var: flask_app_start_result
+...
