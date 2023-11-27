@@ -10,6 +10,8 @@
           - python3
           - python3-pip
           - git
+          - python3-venv
+          - ufw
         state: present
       when: ansible_distribution == "Ubuntu"
 
@@ -19,18 +21,19 @@
           - python3
           - python3-pip
           - git
+          - python3-venv
+          - firewalld
         state: present
       when: ansible_distribution == "CentOS"
-
-    - name: Install python3-venv package (Ubuntu)
-      apt:
-        name: python3-venv
-        state: present
-      when: ansible_distribution == "Ubuntu"
 
     - name: Set up a virtual environment
       become: yes
       command: "python3 -m venv /home/{{ ansible_user }}/Flask-App/flask_env"
+
+    - name: Activate Flask virtual environment
+      ansible.builtin.shell: source /home/{{ ansible_user }}/Flask-App/flask_env/bin/activate
+      args:
+        executable: /bin/bash
 
     - name: Install Flask library
       ansible.builtin.pip:
@@ -56,62 +59,18 @@
         state: present
       when: ansible_distribution == "CentOS"
 
-    - name: Set up a virtual environment
-      become: yes
-      command: "python3 -m venv /home/{{ ansible_user }}/Flask-App/flask_env"
-
-    - name: Activate Flask virtual environment
-      ansible.builtin.shell: source /home/{{ ansible_user }}/Flask-App/flask_env/bin/activate
-      args:
-        executable: /bin/bash
-
-    - name: Install Firewall (CentOS)
-      yum:
-        name: firewalld
-        state: present
-      when: ansible_distribution == 'CentOS'
+    - name: Configure Firewall (Ubuntu)
+      ufw:
+        rule: allow
+        port: 8000
+      when: ansible_distribution == 'Ubuntu'
 
     - name: Configure Firewall (CentOS)
       firewalld:
         port: 8000/tcp
         permanent: yes
         state: enabled
-      notify:
-        - restart firewalld
-
-    - name: Configure Firewall (CentOS)
-      firewalld:
-        port: 80/tcp
-        permanent: yes
-        state: enabled
-      notify:
-        - restart firewalld
-
-    - name: Configure Firewall (CentOS)
-      firewalld:
-        port: 5000/tcp
-        permanent: yes
-        state: enabled
-      notify:
-        - restart firewalld
-
-    - name: Restart firewalld (CentOS)
-      systemd:
-        name: firewalld
-        state: restarted
-      become: yes
-
-    - name: Create Nginx sites-available directory (Ubuntu)
-      file:
-        path: /etc/nginx/sites-available
-        state: directory
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Create Nginx sites-available directory (CentOS)
-      file:
-        path: /etc/nginx/conf.d
-        state: directory
-      when: ansible_distribution == "CentOS"
+      when: ansible_distribution == 'CentOS'
 
     - name: Configure Nginx (Ubuntu)
       template:
