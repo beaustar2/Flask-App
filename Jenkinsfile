@@ -75,12 +75,12 @@ pipeline {
             emailext subject: 'Flask App Tests Failed or Deployment Failed',
                       body: 'The Flask App tests failed, or the deployment failed. Please check the Jenkins build for details.',
                       recipientProviders: [[$class: 'CulpritsRecipientProvider']],
-                      to: Beautypop4sure@gmail.com
+                      to: EMAIL_RECIPIENT
         }
 
         always {
             // Clean up temporary Ansible inventory file
-            deleteFile customizedhosts.ini
+            deleteFile ANSIBLE_HOSTS_FILE
 
             // Deactivate the virtual environment
             sh "deactivate"
