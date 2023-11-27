@@ -11,6 +11,7 @@
           - python3-pip
           - git
           - python3-venv
+          - nginx
         state: present
       when: ansible_distribution == "Ubuntu"
 
@@ -20,6 +21,13 @@
           - python3
           - python3-pip
           - git
+          - epel-release
+        state: present
+      when: ansible_distribution == "CentOS"
+
+    - name: Install Nginx (CentOS)
+      yum:
+        name: nginx
         state: present
       when: ansible_distribution == "CentOS"
 
@@ -44,16 +52,4 @@
         name: gunicorn
         executable: /home/ubuntu/Flask-App/flask_env/bin/pip3
         state: present
-
-    - name: Install Nginx (Ubuntu)
-      apt:
-        name: nginx
-        state: present
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Install Nginx (CentOS)
-      yum:
-        name: nginx
-        state: present
-      when: ansible_distribution == "CentOS"
 ...
