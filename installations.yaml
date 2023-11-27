@@ -2,6 +2,7 @@
 - name: Install required packages and setup virtual environment
   hosts: webservers
   become: yes
+  
   tasks:
     - name: Install required packages
       ansible.builtin.package:
