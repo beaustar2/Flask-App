@@ -19,7 +19,7 @@ server {
 
     error_page 500 502 503 504 /500.html;
     location = /500.html {
-        root /home/{{ ansible_user }}/Flask-App/templates;
+        root /usr/share/nginx/html;
     }
 
     access_log /var/log/nginx/flask_app_access.log;
