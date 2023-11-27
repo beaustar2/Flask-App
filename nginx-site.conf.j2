@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name 3.138.68.33;
+    server_name 3.17.181.178;
 
     location / {
         proxy_pass http://127.0.0.1:8000;
@@ -10,11 +10,11 @@ server {
     }
 
     location /static {
-        alias /home/ec2-user/Flask-App/static;
+        alias /home/centos/Flask-App/static;
     }
 
     location /media {
-        alias /home/ec2-user/Flask-App/media;
+        alias /home/centos/Flask-App/media;
     }
 
     error_page 404 /404.html;
