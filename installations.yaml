@@ -70,74 +70,19 @@
         permanent: yes
         state: enabled
       when: ansible_distribution == 'CentOS'
-
-    - name: Configure Nginx (Ubuntu)
-      template:
-        src: templates/u-nginx.conf.j2
-        dest: /etc/nginx/sites-available/flask_app
-      notify:
-        - restart nginx
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Configure Nginx (CentOS)
-      template:
-        src: templates/nginx.conf.j2
-        dest: /etc/nginx/conf.d/flask_app.conf
-      notify:
-        - restart nginx
-      when: ansible_distribution == "CentOS"
-
-    - name: Create Nginx sites-enabled directory (Ubuntu)
-      file:
-        path: /etc/nginx/sites-enabled
-        state: directory
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Create Nginx sites-enabled directory (CentOS)
-      file:
-        path: /etc/nginx/conf.d
-        state: directory
-      when: ansible_distribution == "CentOS"
-
-    - name: Create symbolic link for Nginx configuration (Ubuntu)
-      file:
-        src: /etc/nginx/sites-available/flask_app
-        dest: /etc/nginx/sites-enabled/flask_app
-        state: link
-      notify:
-        - restart nginx
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Create symbolic link for Nginx configuration (CentOS)
-      file:
-        src: /etc/nginx/conf.d/flask_app.conf
-        dest: /etc/nginx/conf.d/default.conf
-        state: link
-      notify:
-        - restart nginx
-      when: ansible_distribution == "CentOS"
-
-    - name: Run Flask app
-      command: nohup python3 app.py &
-      async: 60
-      poll: 0
-      args:
-        chdir: "/home/{{ ansible_user }}/Flask-App"
-      become_user: "{{ ansible_user }}"
-
-    - name: Get the PID of the Flask app
-      shell: "ps aux | grep 'python3 app.py' | grep -v grep | awk '{print $2}'"
-      register: flask_pid
-      ignore_errors: yes
-
-    - name: Stop Flask app after 60 seconds
-      shell: "sleep 60 && pkill -f 'python3 app.py'"
-      ignore_errors: yes
-
+    
   handlers:
     - name: restart nginx
       systemd:
         name: nginx
         state: restarted
         enabled: yes
+
+- name: Run Flask app
+  command: nohup /home/{{ ansible_user }}/Flask-App/flask_env/bin/python3 app.py &
+  async: 60
+  poll: 0
+  args:
+    chdir: "/home/{{ ansible_user }}/Flask-App"
+  become_user: "{{ ansible_user }}"
 ...
