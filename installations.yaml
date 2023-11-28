@@ -130,6 +130,23 @@
         enabled: yes
       when: ansible_distribution == "CentOS"
 
+    - name: Run Flask app
+      command: nohup python3 app.py &
+      async: 60
+      poll: 0
+      args:
+        chdir: "/home/{{ ansible_user }}/Flask-App"
+      become_user: centos
+
+    - name: Get the PID of the Flask app
+      shell: "ps aux | grep 'python3 app.py' | grep -v grep | awk '{print $2}'"
+      register: flask_pid
+      ignore_errors: yes
+
+    - name: Stop Flask app after 60 seconds
+      shell: "sleep 60 && kill -TERM {{ flask_pid.stdout }}"
+      ignore_errors: yes
+
   handlers:
     - name: restart nginx
       systemd:
