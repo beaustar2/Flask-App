@@ -58,6 +58,12 @@
         port: 5000
       when: ansible_distribution == 'Ubuntu'
 
+    - name: Configure Firewall (Ubuntu)
+      ufw:
+        rule: allow
+        port: 22
+      when: ansible_distribution == 'Ubuntu'
+
     - name: Configure Firewall (CentOS)
       firewalld:
         port: 5000/tcp
