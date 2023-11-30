@@ -46,18 +46,6 @@
         executable: /home/{{ ansible_user }}/Flask-App/flask_env/bin/pip3
         state: present
 
-    - name: Install Nginx (Ubuntu)
-      apt:
-        name: nginx
-        state: present
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Install Nginx (CentOS)
-      yum:
-        name: nginx
-        state: present
-      when: ansible_distribution == "CentOS"
-
     - name: Configure Firewall (Ubuntu)
       ufw:
         rule: allow
@@ -71,75 +59,29 @@
         state: enabled
       when: ansible_distribution == 'CentOS'
 
-    - name: Configure Nginx (Ubuntu)
-      template:
-        src: templates/u-nginx.conf.j2
-        dest: /etc/nginx/sites-available/flask_app
-      notify:
-        - restart nginx
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Configure Nginx (CentOS)
-      template:
-        src: templates/nginx.conf.j2
-        dest: /etc/nginx/conf.d/flask_app.conf
-      notify:
-        - restart nginx
-      when: ansible_distribution == "CentOS"
-
-    - name: Create Nginx sites-enabled directory (Ubuntu)
-      file:
-        path: /etc/nginx/sites-enabled
-        state: directory
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Create Nginx sites-enabled directory (CentOS)
-      file:
-        path: /etc/nginx/conf.d
-        state: directory
-      when: ansible_distribution == "CentOS"
-
-    - name: Create symbolic link for Nginx configuration (Ubuntu)
-      file:
-        src: /etc/nginx/sites-available/flask_app
-        dest: /etc/nginx/sites-enabled/flask_app
-        state: link
-      notify:
-        - restart nginx
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Create symbolic link for Nginx configuration (CentOS)
-      file:
-        src: /etc/nginx/conf.d/flask_app.conf
-        dest: /etc/nginx/conf.d/default.conf
-        state: link
-      notify:
-        - restart nginx
-      when: ansible_distribution == "CentOS"
-
-    - name: Start Nginx service (Ubuntu)
-      service:
-        name: nginx
-        state: started
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Start Nginx service (CentOS)
+    - name: Restart firewalld for CentOS
       systemd:
-        name: nginx
-        state: started
-        enabled: yes
-      when: ansible_distribution == "CentOS"
+        name: firewalld
+        state: restarted
+      become: yes
+      when: ansible_distribution == 'CentOS'
 
-    - name: Run Flask app with Gunicorn
-      ansible.builtin.command: "/home/{{ ansible_user }}/Flask-App/flask_env/bin/gunicorn -w 3 -b 0.0.0.0:8000 app:app"
-      async: 300  # Set the timeout (seconds) for the task to complete
+    - name: Enable UFW for Ubuntu
+      command: ufw --force enable
+      become: yes
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Start Flask App
+      command: "nohup python3 /home/centos/Flask-App/app.py &"
+      async: 60
       poll: 0
       become_user: "{{ ansible_user }}"
+      when: ansible_distribution == 'CentOS'
 
-  handlers:
-    - name: restart nginx
-      systemd:
-        name: nginx
-        state: restarted
-        enabled: yes
+    - name: Start Flask App
+      command: "nohup python3 /home/ubuntu/Flask-App/app.py &"
+      async: 60
+      poll: 0
+      become_user: "{{ ansible_user }}"
+      when: ansible_distribution == 'Ubuntu'
 ...
