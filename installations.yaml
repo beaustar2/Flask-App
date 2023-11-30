@@ -25,6 +25,12 @@
         state: present
       when: ansible_distribution == "CentOS"
 
+    - name: Install virtualenv
+      pip:
+        name: virtualenv
+        executable: pip3
+        state: present
+
     - name: Set up a virtual environment
       become: yes
       command: "python3 -m venv /home/{{ ansible_user }}/Flask-App/flask_env"
@@ -49,12 +55,12 @@
     - name: Configure Firewall (Ubuntu)
       ufw:
         rule: allow
-        port: 8000
+        port: 5000
       when: ansible_distribution == 'Ubuntu'
 
     - name: Configure Firewall (CentOS)
       firewalld:
-        port: 8000/tcp
+        port: 5000/tcp
         permanent: yes
         state: enabled
       when: ansible_distribution == 'CentOS'
