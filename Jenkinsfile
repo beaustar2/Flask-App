@@ -6,7 +6,7 @@ pipeline {
         ANSIBLE_PLAYBOOK = 'deploy-flaskapp.yml'
         VENV_PATH = 'venv'
         TEST_SCRIPT = 'test.py'
-        EMAIL_RECIPIENT = 'Beautypop4sure@gmail.com'  // Replace with the recipient email address
+        EMAIL_RECIPIENT = 'Beautypop4sure@gmail.com' 
         FLASK_APP = 'app.py'
     }
 
